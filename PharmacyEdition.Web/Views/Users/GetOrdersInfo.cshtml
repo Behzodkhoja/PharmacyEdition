@@ -1,0 +1,43 @@
+﻿@using PharmacyEdition.Domain.Enums;
+@using PharmacyEdition.Service.DTOs
+@model IEnumerable<OrderViewModel>
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h1>Users</h1>
+<div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Order Id</th>
+                <th scope="col">Status</th>
+                <th scope="col">Fullname</th>
+                <th scope="col">Payment Type</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@Enum.GetName(typeof(StatusType), @item.Status)</td>
+                    <td>@item.User.FirstName @item.User.LastName</td>
+                    <td>@item.PaymentType</td>
+                    <td>
+                        <a class="btn btn-primary">Edit</a>
+                        <a class="btn btn-danger">Delete</a>
+                        <a class="btn btn-danger">Details</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<p class="mt-10">
+    <a asp-action="Create" class="btn btn-success">Create</a>
+</p>

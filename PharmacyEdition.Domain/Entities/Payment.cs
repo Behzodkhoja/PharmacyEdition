@@ -9,6 +9,4 @@ public class Payment : Auditable
     public bool IsPaid { get; set; }
     public long? CreditCardId { get; set; }
     public CreditCard CreditCard { get; set; }
-    public long OrderId { get; set; }
-    public Order Order { get; set; }
 }
