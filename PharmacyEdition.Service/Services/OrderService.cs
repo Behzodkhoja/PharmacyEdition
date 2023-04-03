@@ -70,6 +70,7 @@ public class OrderService : IOrderService
             insertedOrder.OrderItems.Add(createdOrderItem);
         }
 
+        await orderRepository.SaveChangesAsync();
 
         return new Response<Order>
         {
