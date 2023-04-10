@@ -9,7 +9,15 @@ namespace PharmacyEdition.Service.Services;
 
 public class CreditCardService : ICreditCardService
 {
-    private ICreditCardRepository creditCardRepository = new CreditCardRepository();
+    private readonly ICreditCardRepository creditCardRepository;
+    public CreditCardService(ICreditCardRepository creditCardRepository)
+    {
+        this.creditCardRepository = creditCardRepository;
+    }
+    public CreditCardService()
+    {
+        
+    }
 
     public async ValueTask<Response<CreditCard>> AddAsync(CreditCardCreationDto model)
     {
