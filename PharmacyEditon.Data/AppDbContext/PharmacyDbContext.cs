@@ -14,9 +14,7 @@ namespace PharmacyEditon.Data.AppDbContext
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Order>()
-                .HasOne(o => o.Payment)
-                .WithOne(p => p.Order)
-                .HasForeignKey<Payment>(p => p.OrderId);
+                .HasOne(o => o.Payment);
 
             modelBuilder.Entity<OrderItem>()
                 .HasOne<Order>(ot => ot.Order)

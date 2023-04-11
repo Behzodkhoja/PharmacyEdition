@@ -9,5 +9,6 @@ namespace PharmacyEditon.Data.IRepositories
         Task<bool> DeleteAsync(Predicate<Order> predicate);
         Order SelectAsync(Predicate<Order> predicate = null);
         List<Order> SelectAllAsync(Predicate<Order> predicate = null);
+        Task SaveChangesAsync();
     }
 }

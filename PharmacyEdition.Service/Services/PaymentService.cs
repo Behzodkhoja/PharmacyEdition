@@ -1,4 +1,5 @@
 ﻿using PharmacyEdition.Domain.Entities;
+using PharmacyEdition.Domain.Enums;
 using PharmacyEdition.Models;
 using PharmacyEdition.Service.DTOs;
 using PharmacyEdition.Service.Helpers;
@@ -10,6 +11,8 @@ namespace PharmacyEdition.Service.Services;
 
 public class PaymentService : IPaymentService
 {
+    private IPaymentRepository paymentRepository = new PaymentRepository();
+    private ICreditCardService creditCardService = new CreditCardService();
     private readonly IPaymentRepository paymentRepository = new PaymentRepository();
 
     public PaymentService(IPaymentRepository paymentRepository)
@@ -22,11 +25,33 @@ public class PaymentService : IPaymentService
     }
     public async ValueTask<Response<Payment>> AddAsync(PaymentCreationDto model)
     {
+        long? creditCardId;
+
+        if (model.Type != PaymentType.Cash)
+        {
+            var creditCard = (await creditCardService
+                .GetByIdAsync(model.CreditCardId is null ? -1 : (long)model.CreditCardId)).Value;
+
+            if (creditCard is null)
+            {
+                return new Response<Payment>
+                {
+                    StatusCode = 400,
+                    Message = "Could not find the credit card"
+                };
+            }
+
+            creditCardId = creditCard.Id;
+        }
+        else
+        {
+            creditCardId = null;
+        }
+
         var mappedEntity = new Payment
         {
             CreatedAt = DateTime.UtcNow,
-            CreditCardId = model.CreditCardId,
-            OrderId = model.OrderId,
+            CreditCardId = creditCardId,
             IsPaid = model.IsPaid,
             Type = model.Type
         };
@@ -97,7 +122,6 @@ public class PaymentService : IPaymentService
     public async ValueTask<Response<Payment>> UpdateAsync(long id, PaymentCreationDto model)
     {
         var existedEntity = paymentRepository.SelectAsync(u => u.Id == id);
-
         if (existedEntity is null)
             return new Response<Payment>
             {
@@ -105,11 +129,30 @@ public class PaymentService : IPaymentService
                 Message = "Not found"
             };
 
+        if (model.Type != PaymentType.Cash)
+        {
+            var creditCard = (await creditCardService
+                .GetByIdAsync(model.CreditCardId is null ? -1 : (long)model.CreditCardId)).Value;
+            
+            if (creditCard is null)
+            {
+                return new Response<Payment>
+                {
+                    StatusCode = 400,
+                    Message = "Could not find the credit card"
+                };
+            }
+
+            existedEntity.CreditCardId = model.CreditCardId;
+        }
+        else
+        {
+            existedEntity.CreditCardId = null;
+        }
+
         existedEntity.UpdatedAt = DateTime.UtcNow;
         existedEntity.IsPaid = model.IsPaid;
-        existedEntity.CreditCardId = model.CreditCardId;
         existedEntity.Type = model.Type;
-        existedEntity.OrderId = model.OrderId;
 
         var updatedEntity = await paymentRepository.UpdateAsync(existedEntity.Id, existedEntity);
 

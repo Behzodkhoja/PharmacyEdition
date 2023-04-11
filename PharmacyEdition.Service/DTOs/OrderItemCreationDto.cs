@@ -8,6 +8,5 @@ namespace PharmacyEdition.Service.DTOs;
 public class OrderItemCreationDto
 {
     public long MedicineId { get; set; }
-    public long OrderId { get; set; }
     public long Count { get; set; }
 }

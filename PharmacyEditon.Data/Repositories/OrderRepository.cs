@@ -8,6 +8,10 @@ namespace PharmacyEditon.Data.Repositories
     public class OrderRepository : IOrderRepository
     {
         private readonly PharmacyDbContext context = new PharmacyDbContext();
+        public async Task SaveChangesAsync()
+        {
+            await context.SaveChangesAsync();
+        }
         public async Task<bool> DeleteAsync(Predicate<Order> predicate)
         {
             if (predicate == null)

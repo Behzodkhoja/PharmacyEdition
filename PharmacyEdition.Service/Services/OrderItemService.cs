@@ -59,7 +59,6 @@ public class OrderItemService : IOrderItemService
             CreatedAt = DateTime.UtcNow,
             Count = model.Count,
             MedicineId = model.MedicineId,
-            OrderId = model.OrderId,
             TotalPrice = totalPrice
         };
 
@@ -168,7 +167,6 @@ public class OrderItemService : IOrderItemService
         existedEntity.UpdatedAt = DateTime.UtcNow;
         existedEntity.Count = model.Count;
         existedEntity.MedicineId = model.MedicineId;
-        existedEntity.OrderId = model.OrderId;
         existedEntity.TotalPrice = totalPrice;
 
         var updatedEntity = await orderItemRepository.UpdateAsync(existedEntity.Id, existedEntity);

@@ -30,8 +30,6 @@ public class OrderService : IOrderService
     }
     public async ValueTask<Response<Order>> AddAsync(OrderCreationDto model)
     {
-        var payment = (await paymentService.AddAsync(model.Payment)).Value;
-
         foreach (var orderItem in model.OrderItems)
         {
             var medicine = (await medicineService.GetByIdAsync(orderItem.MedicineId)).Value;
@@ -51,13 +49,15 @@ public class OrderService : IOrderService
                 };
         }
 
-        var orderItems = new List<OrderItem>();
+        var payment = (await paymentService.AddAsync(model.Payment)).Value;
 
-        foreach (var orderItem in model.OrderItems)
+        if (payment is null)
         {
-            var createdItemResponse = await orderItemService.AddAsync(orderItem);
-
-            orderItems.Add(createdItemResponse.Value);
+            return new Response<Order>
+            {
+                StatusCode = 400,
+                Message = "Could not make payment"
+            };
         }
 
         var mappedEntity = new Order
@@ -67,16 +67,27 @@ public class OrderService : IOrderService
             Payment = payment,
             Status = StatusType.Pending,
             UserId = model.UserId,
-            OrderItems = orderItems,
+            OrderItems = new List<OrderItem>()
         };
 
-        var insertedEntity = await orderRepository.InsertAsync(mappedEntity);
+        var insertedOrder = await orderRepository.InsertAsync(mappedEntity);
+
+        foreach (var orderItem in model.OrderItems)
+        {
+            var createdOrderItem = (await orderItemService.AddAsync(orderItem)).Value;
+
+            createdOrderItem.OrderId = insertedOrder.Id;
+
+            insertedOrder.OrderItems.Add(createdOrderItem);
+        }
+
+        await orderRepository.SaveChangesAsync();
 
         return new Response<Order>
         {
             StatusCode = 200,
             Message = "Success",
-            Value = insertedEntity
+            Value = insertedOrder
         };
     }
 
@@ -143,6 +154,7 @@ public class OrderService : IOrderService
                 StatusCode = 404,
                 Message = "Not found"
             };
+
         if (model.OrderItems is not null)
         {
             foreach (var orderItem in model.OrderItems)
@@ -168,6 +180,13 @@ public class OrderService : IOrderService
         if (model.Payment is not null)
         {
             var payment = (await paymentService.AddAsync(model.Payment)).Value;
+            if (payment is null)
+                return new Response<Order>
+                {
+                    StatusCode = 400,
+                    Message = "Could not make payment"
+                };
+
             existedEntity.Payment = payment;
             existedEntity.PatmentId = payment.Id;
         }
