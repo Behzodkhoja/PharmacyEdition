@@ -10,7 +10,17 @@ namespace PharmacyEdition.Service.Services;
 
 public class MedicineService : IMedicineService
 {
-    private IMedicineRepository medicineRepository = new MedicineRepository();
+    //Call repository by Dependency Injection
+    private readonly IMedicineRepository medicineRepository;
+    public MedicineService(IMedicineRepository medicineRepository)
+    {
+        this.medicineRepository = medicineRepository;
+    }
+    //Create empty constructor, because another services can get object from this service
+    public MedicineService()
+    {
+        
+    }
 
     public async ValueTask<Response<Medicine>> AddAsync(MedicineCreationDto model)
     {

@@ -11,10 +11,17 @@ namespace PharmacyEdition.Service.Services;
 
 public class OrderItemService : IOrderItemService
 {
-    private IOrderItemRepository orderItemRepository = new OrderItemRepository();
-    private IMedicineService medicineService = new MedicineService();
-
-
+    private readonly IOrderItemRepository orderItemRepository;
+    private readonly IMedicineService medicineService;
+    public OrderItemService(IOrderItemRepository orderItemRepository, IMedicineService medicineService)
+    {
+        this.orderItemRepository = orderItemRepository;
+        this.medicineService = medicineService;
+    }
+    public OrderItemService()
+    {
+        
+    }
     public async ValueTask<Response<OrderItem>> AddAsync(OrderItemCreationDto model)
     {
         var medicine = (await medicineService.GetByIdAsync(model.MedicineId)).Value;
