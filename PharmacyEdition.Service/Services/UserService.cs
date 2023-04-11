@@ -9,7 +9,16 @@ namespace PharmacyEdition.Service.Services;
 
 public class UserService : IUserService
 {
-    private IUserRepository userRepository = new UserRepository();
+    private readonly IUserRepository userRepository;
+
+    public UserService(IUserRepository userRepository)
+    {
+        this.userRepository = userRepository;
+    }
+    public UserService()
+    {
+        
+    }
 
     public async ValueTask<Response<UserDto>> AddAsync(UserCreationDto model)
     {

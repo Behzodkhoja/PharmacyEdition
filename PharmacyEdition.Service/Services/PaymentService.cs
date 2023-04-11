@@ -13,7 +13,16 @@ public class PaymentService : IPaymentService
 {
     private IPaymentRepository paymentRepository = new PaymentRepository();
     private ICreditCardService creditCardService = new CreditCardService();
+    private readonly IPaymentRepository paymentRepository = new PaymentRepository();
 
+    public PaymentService(IPaymentRepository paymentRepository)
+    {
+        this.paymentRepository = paymentRepository;
+    }
+    public PaymentService()
+    {
+        
+    }
     public async ValueTask<Response<Payment>> AddAsync(PaymentCreationDto model)
     {
         long? creditCardId;

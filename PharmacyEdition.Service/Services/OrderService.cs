@@ -12,11 +12,22 @@ namespace PharmacyEdition.Service.Services;
 
 public class OrderService : IOrderService
 {
-    private IOrderRepository orderRepository = new OrderRepository();
-    private IOrderItemService orderItemService = new OrderItemService();
-    private IMedicineService medicineService = new MedicineService();
-    private IPaymentService paymentService = new PaymentService();
+    private readonly IOrderRepository orderRepository;
+    private readonly IOrderItemService orderItemService;
+    private readonly IMedicineService medicineService;
+    private readonly IPaymentService paymentService;
 
+    public OrderService(IOrderRepository orderRepository, IOrderItemService orderItemService, IMedicineService medicineService, IPaymentService paymentService)
+    {
+        this.orderRepository = orderRepository;
+        this.orderItemService = orderItemService;
+        this.medicineService = medicineService;
+        this.paymentService = paymentService;
+    }
+    public OrderService()
+    {
+        
+    }
     public async ValueTask<Response<Order>> AddAsync(OrderCreationDto model)
     {
         foreach (var orderItem in model.OrderItems)
